@@ -23,6 +23,13 @@ This project successfully implements the core features as outlined in the minimu
 * Repository List: See a list of a user's public, non-forked repositories, displaying the repository name, primary development language, star count, and description.
 * Web View Integration: Tap on any repository to open its GitHub page in an in-app web view.
 
+## Project Branches
+
+This project utilizes a clear branching strategy to illustrate its development lifecycle:
+
+* [mvp branch](https://github.com/toniremi/GitLook/tree/mvp): This branch represents the Minimum Viable Product (MVP). It contains the core features and functionality as initially defined, delivered rapidly to establish a baseline.
+* [main branch](https://github.com/toniremi/GitLook): This branch serves as the primary development line. It contains all the features from the mvp branch plus subsequent incremental improvements, refinements, and new features. It showcases the continuous evolution and enhancement of the application beyond its initial MVP release.
+
 ## Getting Started
 
 To run this project locally, you'll need Xcode 15+ and an iOS device or simulator running iOS 17+.
