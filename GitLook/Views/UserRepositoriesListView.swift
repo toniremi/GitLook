@@ -15,14 +15,16 @@ struct UserRepositoriesListView: View {
     var body: some View {
         List { // The List itself does not take a Binding<Data> here
             if repositories.isEmpty {
-                Text("No non-forked repositories found.")
-                    .foregroundColor(.gray)
-                    .padding()
+                // use our new Empty State View
+                EmptyStateView(
+                    systemImageName: "folder.fill.badge.questionmark",
+                    title: "No Repositories",
+                    message: "This user has no public, non-forked repositories to display.")
             } else {
                 // Here, ForEach takes your array directly because GitHubRepository is Identifiable
                 ForEach(repositories) { repo in // This line should now be fine
                     // NavigationLink to WebView
-                    NavigationLink(destination: WebView(url: repo.htmlUrl)) {
+                    NavigationLink(destination: WebView(url: repo.htmlUrl).navigationTitle(repo.name)) {
                         VStack(alignment: .leading, spacing: 5) {
                             Text(repo.name)
                                 .font(.headline)
@@ -60,6 +62,10 @@ struct UserRepositoriesListView: View {
 
 struct UserRepositoriesListView_Previews: PreviewProvider {
     static var previews: some View {
+        // No repositories preview
+        UserRepositoriesListView(repositories: [])
+                    .previewLayout(.sizeThatFits)
+        // List with Repositories
         UserRepositoriesListView(repositories: [
             GithubRepository(
                 id: 1,

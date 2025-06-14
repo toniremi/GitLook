@@ -9,18 +9,48 @@ import Foundation
 
 enum APIError: Error, LocalizedError {
     case invalidURL
-    case noData
-    case decodingError(Error)
-    case networkError(Error)
-    case httpError(Int)
+    case networkError(Error) // Original network errors from URLSession
+    case httpError(Int) // Generic HTTP error with status code
+    case unauthorized(message: String?) // Specific for 401, with optional message from API
+    case apiError(statusCode: Int, message: String) // For other non-2xx errors with an API message
+    case decodingError(Error) // For JSON decoding failures
+    case unknownError
 
     var errorDescription: String? {
         switch self {
-        case .invalidURL: return "The URL provided was invalid."
-        case .noData: return "No data was received from the server."
-        case .decodingError(let error): return "Failed to decode the response: \(error.localizedDescription)"
-        case .networkError(let error): return "Network request failed: \(error.localizedDescription)"
-        case .httpError(let statusCode): return "HTTP Error: \(statusCode)"
+        case .invalidURL:
+            return "The request URL was invalid. Please check the application's configuration."
+        case .networkError(let error):
+            // Provide a more user-friendly message for common network issues
+            if let urlError = error as? URLError {
+                switch urlError.code {
+                case .notConnectedToInternet:
+                    return "No internet connection. Please check your network settings."
+                case .timedOut:
+                    return "The network request timed out. Please try again."
+                case .cannotConnectToHost:
+                    return "Could not connect to the server. The GitHub API might be temporarily unavailable."
+                default:
+                    return "A network error occurred: \(urlError.localizedDescription)"
+                }
+            }
+            return "A network error occurred: \(error.localizedDescription)"
+        case .httpError(let statusCode):
+            return "Server responded with status code \(statusCode). Please try again later."
+        case .unauthorized(let message):
+            // More helpful message for 401
+            if let msg = message, !msg.isEmpty {
+                return "Authentication failed: \(msg). Please check your Personal Access Token (PAT)."
+            }
+            return "Authentication failed (401 Unauthorized). Please ensure your Personal Access Token (PAT) is correct and has the necessary permissions."
+        case .apiError(let statusCode, let message):
+            // For other API-specific errors with a message
+            return "GitHub API Error (\(statusCode)): \(message). Please try again."
+        case .decodingError(let error):
+            // Detailed message for decoding errors (useful for development, can be more generic for user)
+            return "Failed to process data from the server. \(error.localizedDescription)"
+        case .unknownError:
+            return "An unexpected error occurred. Please try again."
         }
     }
 }
@@ -51,25 +81,85 @@ class GitHubAPIService {
         guard let httpResponse = response as? HTTPURLResponse else {
             throw APIError.networkError(NSError(domain: "Invalid Response", code: 0, userInfo: nil))
         }
+        
+        // MARK: - Debugging: Print Raw JSON Response
+        if let jsonString = String(data: data, encoding: .utf8) {
+            print("--- Raw JSON Response ---")
+            print(jsonString)
+            print("-------------------------")
+        } else {
+            print("--- Could not convert data to string for debugging ---")
+        }
 
+
+        // properly check status code to return a more complete error
+        // the aim is to using our new ErrorView to display a more user friendly error in the UI
         guard (200...299).contains(httpResponse.statusCode) else {
-            throw APIError.httpError(httpResponse.statusCode)
+            // Attempt to decode a GitHub API error response
+            do {
+                let apiErrorResponse = try JSONDecoder().decode(GitHubAPIErrorResponse.self, from: data)
+                
+                // Specific handling for 401 Unauthorized
+                if httpResponse.statusCode == 401 {
+                    throw APIError.unauthorized(message: apiErrorResponse.message)
+                } else {
+                    // Other non-2xx status codes that have a message
+                    throw APIError.apiError(statusCode: httpResponse.statusCode, message: apiErrorResponse.message)
+                }
+            } catch let decodingError as DecodingError {
+                // If we couldn't decode a GitHubAPIErrorResponse, it might be a generic HTTP error
+                // or a different error format. Log the decoding error for debugging.
+                print("Failed to decode GitHubAPIErrorResponse for status \(httpResponse.statusCode): \(decodingError.localizedDescription)")
+                // Fallback to generic HTTP error, but give specific 401 if it's 401
+                if httpResponse.statusCode == 401 {
+                    // throw unauthorized error without specific message
+                    throw APIError.unauthorized(message: nil)
+                } else {
+                    // throw generic http error using the status code
+                    throw APIError.httpError(httpResponse.statusCode)
+                }
+            } catch {
+                // Catch any other errors during the error decoding process
+                print("An unexpected error occurred while trying to decode API error: \(error.localizedDescription)")
+                
+                if httpResponse.statusCode == 401 {
+                    // throw unauthorized error without specific message
+                    throw APIError.unauthorized(message: nil)
+                } else {
+                    // throw generic http error using the status code
+                    throw APIError.httpError(httpResponse.statusCode)
+                }
+            }
         }
 
         do {
-            // MARK: - Debugging: Print Raw JSON Response
-            if let jsonString = String(data: data, encoding: .utf8) {
-                print("--- Raw JSON Response ---")
-                print(jsonString)
-                print("-------------------------")
-            } else {
-                print("--- Could not convert data to string for debugging ---")
-            }
-            
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase // GitHub API uses snake_case
             return try decoder.decode(T.self, from: data)
         } catch {
+            // Debugging: Print Decoding Error details
+            print("--- Decoding Error Details for successful HTTP status ---")
+            print("Error: \(error.localizedDescription)")
+            if let decodingError = error as? DecodingError {
+                switch decodingError {
+                case .dataCorrupted(let context):
+                    print("Data corrupted: \(context.debugDescription)")
+                case .keyNotFound(let key, let context):
+                    print("Key '\(key.stringValue)' not found: \(context.debugDescription)")
+                    print("Coding path: \(context.codingPath)")
+                case .typeMismatch(let type, let context):
+                    print("Type mismatch for \(type): \(context.debugDescription)")
+                    print("Coding path: \(context.codingPath)")
+                case .valueNotFound(let type, let context):
+                    print("Value not found for \(type): \(context.debugDescription)")
+                    print("Coding path: \(context.codingPath)")
+                @unknown default:
+                    print("Unknown decoding error")
+                }
+            }
+            print("----------------------------")
+            
+            // throw a decoding error
             throw APIError.decodingError(error)
         }
     }

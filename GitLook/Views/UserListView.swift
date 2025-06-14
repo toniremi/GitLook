@@ -20,17 +20,21 @@ struct UserListView: View {
                 if viewModel.isLoading {
                     ProgressView("Loading Users...")
                 } else if let error = viewModel.errorMessage {
-                    Text("Error: \(error)")
-                        .foregroundColor(.red)
-                        .padding()
-                    Button("Retry") {
+                    // Display our new Error View
+                    ErrorView(message: error) {
+                        // Retry action: re-fetch users
                         Task {
-                            // Ensure the token is passed here for the API call
                             await viewModel.fetchUsers(token: appSettings.githubPersonalAccessToken)
                         }
                     }
+                } else if viewModel.users.isEmpty {
+                    // Show our reusable EmptyStateView if no users are found
+                    EmptyStateView(
+                        systemImageName: "person.2.fill",
+                        title: "No GitHub Users Found",
+                        message: "It seems no users are available at the moment. This might be due to API issues or the provided token."
+                    )
                 } else {
-                    
                     List(viewModel.users) { user in
                         // when tapping a row navigate to UserRepositoryView
                         NavigationLink(destination: UserRepositoryView(username: user.login).environmentObject(appSettings)) {
@@ -53,8 +57,10 @@ struct UserListView: View {
             .navigationTitle("GitHub Users")
             .task {
                 // Trigger fetching users when the view appears
-                // Pass the token from appSettings to the ViewModel's fetch method
-                await viewModel.fetchUsers(token: appSettings.githubPersonalAccessToken)
+                // Only fetch if the list is empty, not loading, and no error previously occurred
+                if viewModel.users.isEmpty && !viewModel.isLoading && viewModel.errorMessage == nil {
+                    await viewModel.fetchUsers(token: appSettings.githubPersonalAccessToken)
+                }
             }
             // Optional: Add a settings button to navigate back to token input
             .toolbar {

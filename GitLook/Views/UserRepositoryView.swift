@@ -16,15 +16,13 @@ struct UserRepositoryView: View {
     var body: some View {
         VStack {
             if viewModel.isLoading {
-                ProgressView("Loading User Data...")
+                ProgressView("Loading '\(username)' User Data...")
                     .padding()
             } else if let errorMessage = viewModel.errorMessage {
                 Spacer() // Push error to center
-                Text("Error: \(errorMessage)")
-                    .foregroundColor(.red)
-                    .multilineTextAlignment(.center)
-                    .padding()
-                Button("Retry") {
+                
+                ErrorView(message: errorMessage) {
+                    // Retry action: re-fetch user data
                     Task {
                         await viewModel.fetchData(for: username, token: appSettings.githubPersonalAccessToken)
                     }
@@ -46,15 +44,22 @@ struct UserRepositoryView: View {
             } else {
                 // This state might occur briefly before loading or if no user details found
                 Spacer()
-                Text("No user data available or user not found.")
-                    .foregroundColor(.gray)
+                // Show empty state if user details are nil (e.g., user not found)
+                EmptyStateView(
+                    systemImageName: "person.fill.questionmark",
+                    title: "User Not Found",
+                    message: "The user '\(username)' could not be found or their data is currently unavailable."
+                )
                 Spacer()
             }
         }
         .navigationTitle(username) // Set the navigation bar title
         .navigationBarTitleDisplayMode(.inline) // Keep the title compact
-        .task { // .task modifier fetches data when the view appears
-            await viewModel.fetchData(for: username, token: appSettings.githubPersonalAccessToken)
+        .task {
+            // Fetch only if user detail is nil and not already loading or in an error state
+            if viewModel.userDetail == nil && !viewModel.isLoading && viewModel.errorMessage == nil {
+                await viewModel.fetchData(for: username, token: appSettings.githubPersonalAccessToken)
+            }
         }
     }
 }
