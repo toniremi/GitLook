@@ -13,6 +13,9 @@ struct TokenInputView: View {
     // Local state for the text field input
     @State private var tokenInput: String = ""
     
+    // State to control the Github WebView
+    @State private var isPresentWebView = false
+    
     // State for controlling alerts
     @State private var showingAlert = false
     @State private var alertTitle = ""
@@ -30,10 +33,36 @@ struct TokenInputView: View {
                     .disabled(tokenInput.isEmpty) // Disable button if field is empty
                 }
                 
-                Text("A Personal Access Token (PAT) is required to access the GitHub API and avoid strict rate limits. Please generate one from your GitHub settings under Developer settings > Personal access tokens (classic) with 'public_repo' and 'read:user' scopes.")
+                // Better instructions on how to create the PTA
+                Text("A Personal Access Token (PAT) is required to access the GitHub API and avoid strict rate limits. \nPlease generate one from your GitHub settings under `Developer settings` > `Personal access tokens (classic)` with 'public_repo' and 'read:user' scopes.")
                     .font(.caption)
                     .foregroundColor(.gray)
                     .padding(.vertical)
+                
+                // Include a button to open Github from the App
+                Button("Open GitHub") {
+                    // make the WebView present
+                    isPresentWebView = true
+                }.sheet(isPresented: $isPresentWebView) {
+                    NavigationStack {
+                        // load our WebView to Github
+                        WebView(url: "https://github.com/")
+                            .ignoresSafeArea()
+                            .navigationTitle("GitHub")
+                            .navigationBarTitleDisplayMode(.inline)
+                    }
+                }
+                
+                // only when the user has a token saved show a clear token section
+                if appSettings.githubPersonalAccessToken.isEmpty == false {
+                    Section() {
+                        Button("Clear Saved Token") {
+                            // clear the token
+                            clearToken()
+                        }
+                    }
+                }
+                
             }
             .navigationTitle("App Setup")
             .alert(isPresented: $showingAlert) {
@@ -41,8 +70,7 @@ struct TokenInputView: View {
             }
             .onAppear {
                 // Pre-fill if there's a token already (e.g., from a previous session, but this is handled by AppSettings itself)
-                // This line is primarily for testing/visual feedback in the field if a token were loaded,
-                // but AppSettings handles the loading into its @Published var
+                tokenInput = appSettings.githubPersonalAccessToken
             }
         }
     }
@@ -65,6 +93,16 @@ struct TokenInputView: View {
             // is no longer empty, causing GitLookApp's body to switch to UserListView.
             // No explicit dismissal or navigation code is needed here for that transition.
         }
+    }
+    
+    private func clearToken() {
+        // call clear token to remove it from KeyChain
+        appSettings.clearToken()
+        tokenInput = "" // clear the local state also
+        // display an UI alert to notifiy the user that the token has ben cleared
+        alertTitle = "Success!"
+        alertMessage = "Your Personal Access Token has been cleared and removed successfully."
+        showingAlert = true
     }
 }
 

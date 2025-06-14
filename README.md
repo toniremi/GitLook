@@ -58,8 +58,8 @@ We acknowledge these areas for future enhancement:
 
 ### Shortcuts Taken for MVP Delivery
 
-* **Token Storage (User Defaults)**: For speed of development and simplicity, the GitHub Personal Access Token is currently stored in UserDefaults.
-	* **Improvement Area**: For a production application, Keychain Services should be used for secure storage of sensitive user data like API tokens. UserDefaults is not encrypted and poses a security risk.
+* **Token Storage (User Defaults)**: ~For speed of development and simplicity, the GitHub Personal Access Token is currently stored in UserDefaults.~
+	* **Improvement Area**: ~For a production application, Keychain Services should be used for secure storage of sensitive user data like API tokens. UserDefaults is not encrypted and poses a security risk.~ **Implemented**
 * **Basic Error Handling & UI Feedback**: While basic error messages are displayed for network failures, the error handling UI is currently minimal.
 	* **Improvement Area**: Implement more robust and user-friendly error states, potentially with specific actions (e.g., retry buttons that are more prominent, or visually distinct error views).
 * **No Persistence Beyond Token**: User list and repository data are fetched on demand and not persisted locally beyond the current session.
@@ -76,3 +76,17 @@ We acknowledge these areas for future enhancement:
 * **Favorite Users/Repositories**: Allow users to mark certain users or repositories as favorites for quick access.
 * **Repository Sorting/Filtering**: Add options to sort repositories by stars, language, last updated, etc.
 * **Theming/Dark Mode**: Provide support for light and dark modes.
+
+## Introduced Dependencies during improvements
+* [keychain-swift](https://github.com/evgenyneu/keychain-swift) => Helper functions for saving text in Keychain securely for iOS, OS X, tvOS and watchOS. 
+
+## Sources used to complete the MVP
+
+Github List Users => [https://docs.github.com/en/rest/users/users?apiVersion=2022-11-28#list-users](https://docs.github.com/en/rest/users/users?apiVersion=2022-11-28#list-users)
+
+Github Get User => [https://docs.github.com/en/rest/users/users?apiVersion=2022-11-28#get-a-user](https://docs.github.com/en/rest/users/users?apiVersion=2022-11-28#get-a-user)
+
+Github List User Repositories => [https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-repositories-for-a-user](https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-repositories-for-a-user)
+
+WebView using UIPresentable => [https://sarunw.com/posts/swiftui-webview/](https://sarunw.com/posts/swiftui-webview/)
+
