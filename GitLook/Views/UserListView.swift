@@ -12,7 +12,7 @@ struct UserListView: View {
     @EnvironmentObject var appSettings: AppSettings
     
     @StateObject var viewModel = UserListViewModel()
-
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -30,21 +30,10 @@ struct UserListView: View {
                         }
                     }
                 } else {
+                    
                     List(viewModel.users) { user in
-                        HStack {
-                            AsyncImage(url: URL(string: user.avatarUrl)) { image in
-                                image.resizable()
-                            } placeholder: {
-                                ProgressView()
-                            }
-                            .frame(width: 50, height: 50)
-                            .clipShape(Circle())
-                            
-                            Text(user.login)
-                                .font(.headline)
-                        }
-                        /*NavigationLink(destination: UserDetailView(username: user.login).environmentObject(appSettings)) {
-                            // Your user row content (e.g., AsyncImage and Text)
+                        // when tapping a row navigate to UserRepositoryView
+                        NavigationLink(destination: UserRepositoryView(username: user.login).environmentObject(appSettings)) {
                             HStack {
                                 AsyncImage(url: URL(string: user.avatarUrl)) { image in
                                     image.resizable()
@@ -57,7 +46,7 @@ struct UserListView: View {
                                 Text(user.login)
                                     .font(.headline)
                             }
-                        }*/
+                        }
                     }
                 }
             }
@@ -82,7 +71,7 @@ struct UserListView: View {
 struct UserListView_Previews: PreviewProvider {
     static var previews: some View {
         UserListView()
-            // Provide a dummy AppSettings for the preview
+        // Provide a dummy AppSettings for the preview
             .environmentObject(AppSettings())
     }
 }

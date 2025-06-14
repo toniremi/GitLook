@@ -57,6 +57,15 @@ class GitHubAPIService {
         }
 
         do {
+            // MARK: - Debugging: Print Raw JSON Response
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("--- Raw JSON Response ---")
+                print(jsonString)
+                print("-------------------------")
+            } else {
+                print("--- Could not convert data to string for debugging ---")
+            }
+            
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase // GitHub API uses snake_case
             return try decoder.decode(T.self, from: data)
