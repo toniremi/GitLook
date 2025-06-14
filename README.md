@@ -63,12 +63,14 @@ The architecture broadly follows the **MVVM (Model-View-ViewModel)** pattern for
 To deliver this MVP quickly (aprox. 5-6 hours) and demonstrate core functionality, certain design and implementation decisions were made.
 We acknowledge these areas for future enhancement:
 
-### Shortcuts Taken for MVP Delivery
+### Shortcuts Taken for MVP Delivery 
 
-* **Token Storage (User Defaults)**: ~For speed of development and simplicity, the GitHub Personal Access Token is currently stored in UserDefaults.~
-	* **Improvement Area**: ~For a production application, Keychain Services should be used for secure storage of sensitive user data like API tokens. UserDefaults is not encrypted and poses a security risk.~ **Implemented**
-* **Basic Error Handling & UI Feedback**: While basic error messages are displayed for network failures, the error handling UI is currently minimal.
-	* **Improvement Area**: Implement more robust and user-friendly error states, potentially with specific actions (e.g., retry buttons that are more prominent, or visually distinct error views).
+~This means it has already been addressed and implemented~
+
+* **~Token Storage (User Defaults)~**: ~For speed of development and simplicity, the GitHub Personal Access Token is currently stored in UserDefaults.~
+	* **~Improvement Area~**: ~For a production application, Keychain Services should be used for secure storage of sensitive user data like API tokens. UserDefaults is not encrypted and poses a security risk.~ 
+* **~Basic Error Handling & UI Feedback~**: ~While basic error messages are displayed for network failures, the error handling UI is currently minimal.~
+	* **~Improvement Area~**: ~Implement more robust and user-friendly error states, potentially with specific actions (e.g., retry buttons that are more prominent, or visually distinct error views).~
 * **No Persistence Beyond Token**: User list and repository data are fetched on demand and not persisted locally beyond the current session.
 	* **Improvement Area**: For enhanced UX and offline capabilities, consider implementing Core Data or Realm for local caching of user and repository data.
 * **Limited UI Polish & Animations**: The UI focuses on functionality over advanced aesthetics and animations.
