@@ -80,7 +80,7 @@ struct UserDetailsView: View {
         }
         .padding() // Padding inside the VStack
         .frame(maxWidth: .infinity) // Make it span the width
-        .background(Color.white) // Background color for the card
+        .background(Color(.systemBackground).opacity(0.8)) // Background color for the card
         .cornerRadius(10)
         .shadow(radius: 2) // Subtle shadow for the card
         .padding(.horizontal) // Padding from the edges of its parent view

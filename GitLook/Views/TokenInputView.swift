@@ -11,6 +11,9 @@ struct TokenInputView: View {
     @EnvironmentObject var appSettings: AppSettings
     @Environment(\.openURL) var openURL
     
+    // Access the same AppStorage variable for the theme
+    @AppStorage("appTheme") private var appTheme: AppTheme = .system
+    
     // Local state for the text field input
     @State private var tokenInput: String = ""
     
@@ -74,6 +77,17 @@ struct TokenInputView: View {
                             clearToken()
                         }
                     }
+                }
+                
+                // Appearence to choose theme
+                Section(header: Text("App Appearance")) {
+                    Picker("Theme", selection: $appTheme) {
+                        ForEach(AppTheme.allCases) { theme in
+                            Text(theme.description)
+                                .tag(theme)
+                        }
+                    }
+                    .pickerStyle(.segmented) // A compact segmented control for the options
                 }
                 
                 // some Personal Branding

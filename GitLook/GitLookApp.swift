@@ -11,12 +11,18 @@ import SwiftUI
 struct GitLookApp: App {
     @StateObject var appSettings = AppSettings()
     
+    @AppStorage("appTheme") private var appTheme: AppTheme = .system // Default to system
+    
     var body: some Scene {
         WindowGroup {
             if appSettings.githubPersonalAccessToken.isEmpty {
-                TokenInputView().environmentObject(appSettings)
+                TokenInputView()
+                    .environmentObject(appSettings)
+                    .preferredColorScheme(appTheme.colorScheme)
             } else {
-                UserListView().environmentObject(appSettings)
+                UserListView()
+                    .environmentObject(appSettings)
+                    .preferredColorScheme(appTheme.colorScheme)
             }
         }
     }

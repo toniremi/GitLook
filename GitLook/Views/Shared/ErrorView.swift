@@ -39,7 +39,7 @@ struct ErrorView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity) // Make it fill available space
-        .background(Color.white.opacity(0.8)) // Slightly transparent background
+        .background(Color(.systemBackground).opacity(0.8)) // Slightly transparent background
         .cornerRadius(15)
         .shadow(radius: 5)
         .padding() // Padding from the screen edges
