@@ -17,7 +17,7 @@ struct UserRepositoryView: View {
         VStack {
             if viewModel.isLoading {
                 ProgressView("Loading '\(username)' User Data...")
-                    .padding()
+                    .padding().transition(.opacity)
             } else if let errorMessage = viewModel.errorMessage {
                 Spacer() // Push error to center
                 
@@ -26,11 +26,11 @@ struct UserRepositoryView: View {
                     Task {
                         await viewModel.fetchData(for: username, token: appSettings.githubPersonalAccessToken)
                     }
-                }
+                }.transition(.opacity) // include fade (in/out) transition
                 Spacer()
             } else if let user = viewModel.userDetail {
                 // Display UserDetailsView at the top
-                UserDetailsView(user: user)
+                UserDetailsView(user: user).transition(.opacity)
                 
                 // Add a section title for clarity
                 Text("Repositories")
@@ -40,7 +40,7 @@ struct UserRepositoryView: View {
                     .frame(maxWidth: .infinity, alignment: .leading) // Align title to left
                 
                 // Display UserRepositoriesListView below
-                UserRepositoriesListView(repositories: viewModel.repositories)
+                UserRepositoriesListView(repositories: viewModel.repositories).transition(.opacity)
             } else {
                 // This state might occur briefly before loading or if no user details found
                 Spacer()
@@ -49,7 +49,7 @@ struct UserRepositoryView: View {
                     systemImageName: "person.fill.questionmark",
                     title: "User Not Found",
                     message: "The user '\(username)' could not be found or their data is currently unavailable."
-                )
+                ).transition(.opacity)
                 Spacer()
             }
         }
@@ -61,6 +61,10 @@ struct UserRepositoryView: View {
                 await viewModel.fetchData(for: username, token: appSettings.githubPersonalAccessToken)
             }
         }
+        .animation(.default, value: viewModel.isLoading) // Animate changes based on isLoading
+        .animation(.default, value: viewModel.errorMessage) // Animate changes based on error message
+        .animation(.default, value: viewModel.userDetail) // Animate changes based on userDetails
+        .animation(.default, value: viewModel.repositories.isEmpty) // Animate changes based on list emptiness
     }
 }
 

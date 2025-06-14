@@ -19,13 +19,13 @@ struct UserRepositoriesListView: View {
                 EmptyStateView(
                     systemImageName: "folder.fill.badge.questionmark",
                     title: "No Repositories",
-                    message: "This user has no public, non-forked repositories to display.")
+                    message: "This user has no public, non-forked repositories to display.").transition(.opacity)
             } else {
                 // Here, ForEach takes your array directly because GitHubRepository is Identifiable
                 ForEach(repositories) { repo in // This line should now be fine
                     // NavigationLink to WebView
                     NavigationLink(destination: WebView(url: repo.htmlUrl).navigationTitle(repo.name)) {
-                        VStack(alignment: .leading, spacing: 5) {
+                        LazyVStack(alignment: .leading, spacing: 5) {
                             Text(repo.name)
                                 .font(.headline)
                                 .foregroundColor(.primary)
@@ -47,13 +47,14 @@ struct UserRepositoriesListView: View {
                             if let description = repo.description, !description.isEmpty {
                                 Text(description)
                                     .font(.body)
-                                    .lineLimit(2)
+                                    .lineLimit(3)
                                     .foregroundColor(.secondary)
                             }
                         }
                         .padding(.vertical, 5)
+                        .fixedSize(horizontal: false, vertical: true)
                     }
-                }
+                }.animation(.default, value: repositories)
             }
         }
         .listStyle(.plain)
