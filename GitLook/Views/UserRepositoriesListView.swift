@@ -30,25 +30,36 @@ struct UserRepositoriesListView: View {
                                 .font(.headline)
                                 .foregroundColor(.primary)
                             
-                            if let language = repo.language, !language.isEmpty {
-                                Text("Language: \(language)")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            HStack {
-                                Image(systemName: "star.fill")
-                                    .foregroundColor(.yellow)
-                                Text("\(repo.stargazersCount)")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            
                             if let description = repo.description, !description.isEmpty {
                                 Text(description)
                                     .font(.body)
                                     .lineLimit(3)
                                     .foregroundColor(.secondary)
+                            }
+                            
+                            HStack {
+                                HStack {
+                                    Image(systemName: "star.fill")
+                                        .foregroundColor(.yellow)
+                                    Text("\(repo.stargazersCount)")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                if let language = repo.language, !language.isEmpty {
+                                    
+                                    HStack {
+                                        // The color circle
+                                        Circle().fill(LanguageColorProvider.shared.color(for: language)) // Get color from provider
+                                            .frame(width: 10, height: 10) // Set size for the circle
+                                            .overlay(Circle().stroke(Color.primary.opacity(0.2), lineWidth: 0.5)) // Optional: subtle border
+                                        
+                                        // The language text
+                                        Text(language)
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    
+                                }
                             }
                         }
                         .padding(.vertical, 5)
@@ -65,7 +76,7 @@ struct UserRepositoriesListView_Previews: PreviewProvider {
     static var previews: some View {
         // No repositories preview
         UserRepositoriesListView(repositories: [])
-                    .previewLayout(.sizeThatFits)
+            .previewLayout(.sizeThatFits)
         // List with Repositories
         UserRepositoriesListView(repositories: [
             GithubRepository(

@@ -73,7 +73,7 @@ We acknowledge these areas for future enhancement:
 	* **~Improvement Area~**: ~Implement more robust and user-friendly error states, potentially with specific actions (e.g., retry buttons that are more prominent, or visually distinct error views).~
 * **No Persistence Beyond Token**: User list and repository data are fetched on demand and not persisted locally beyond the current session.
 	* **Improvement Area**: For enhanced UX and offline capabilities, consider implementing Core Data or Realm for local caching of user and repository data.
-* **Limited UI Polish & Animations**: The UI focuses on functionality over advanced aesthetics and animations.
+* **~Limited UI Polish & Animations~**: ~The UI focuses on functionality over advanced aesthetics and animations.~
 	* **Improvement Area**: Enhance the user interface with custom styling, smoother transitions, and animations to improve the overall user experience.
 * **No Pagination for User Lists/Repositories**: The current implementation fetches a default number of users/repositories. For users with many repositories, this might be incomplete.
 	* **Improvement Area**: Implement pagination for both the user list and repository list to efficiently load larger datasets as the user scrolls.
