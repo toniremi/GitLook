@@ -16,7 +16,7 @@ struct GitLookApp: App {
     var body: some Scene {
         WindowGroup {
             if appSettings.githubPersonalAccessToken.isEmpty {
-                OnboardingFlow()
+                OnboardingFlowView()
                     .environmentObject(appSettings)
                     .preferredColorScheme(appTheme.colorScheme)
             } else {

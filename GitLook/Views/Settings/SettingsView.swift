@@ -25,6 +25,9 @@ struct SettingsView: View {
     @State private var alertTitle = ""
     @State private var alertMessage = ""
     
+    // github PAT create help url
+    private let githubHelpURL = URL(string: "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token")!
+    
     // some personal branding
     // my github avatar picture
     private var myAvatarUrl = URL(string: "https://avatars.githubusercontent.com/u/1259874?v=4")!
@@ -55,16 +58,28 @@ struct SettingsView: View {
                         .padding(.vertical)
                     
                     // Include a button to open Github from the App
-                    Button("Open GitHub") {
+                    Button("Open GitHub Settings Page") {
                         // make the WebView present
                         isPresentWebView = true
                     }.sheet(isPresented: $isPresentWebView) {
                         NavigationStack {
                             // load our WebView to Github
-                            WebViewContainer(url: "https://github.com/", title: "Github")
+                            WebViewContainer(url: "https://github.com/settings/profile", title: "Github")
                                 .ignoresSafeArea()
                                 .navigationBarTitleDisplayMode(.inline)
                         }
+                    }
+                    
+                    // include a help button to github documentation on PAT's
+                    Button(action: {
+                        openURL(githubHelpURL)
+                    }) {
+                        HStack {
+                            Text("Get help creating a token")
+                            Image(systemName: "questionmark.circle") // Help icon
+                        }
+                        .font(.subheadline)
+                        .foregroundColor(.accentColor) // Uses the system's accent color (or your custom one if set in Assets)
                     }
                 }
                 
