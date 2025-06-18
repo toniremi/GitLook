@@ -167,10 +167,17 @@ class GitHubAPIService {
     /// Fetch GitHub Users
     /// - Parameters:
     ///     - token: The personal access token neded for the request
-    func fetchUsers(token: String) async throws -> [GithubUser] {
-        guard let url = URL(string: "https://api.github.com/users") else {
+    func fetchUsers(token: String, since: Int?, perPage: Int) async throws -> [GithubUser] {
+        
+        var urlString = "https://api.github.com/users?per_page=\(perPage)"
+        if let sinceId = since {
+            urlString += "&since=\(sinceId)"
+        }
+        
+        guard let url = URL(string: urlString) else {
             throw APIError.invalidURL
         }
+
         return try await performRequest(url: url, personalAccessToken: token)
     }
 

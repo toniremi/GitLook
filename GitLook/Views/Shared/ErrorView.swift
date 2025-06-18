@@ -9,8 +9,18 @@ import SwiftUI
 
 struct ErrorView: View {
     let message: String
-    let retryAction: () -> Void // A closure to be called when "Retry" is tapped
+    var actionTitle: String? = nil
+    var retryAction: (() -> Void)? // A closure to be called when "Retry" is tapped
 
+    // create an init so we can construct this view with loading text optionally
+    init(message: String, actionTitle: String? = nil, retryAction: (() -> Void)? ) {
+        // required options
+        self.message = message
+        // optionals
+        self.actionTitle = actionTitle
+        self.retryAction = retryAction
+    }
+    
     var body: some View {
         VStack(spacing: 15) {
             Image(systemName: "exclamationmark.triangle.fill") // A clear error icon
@@ -26,15 +36,19 @@ struct ErrorView: View {
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
-
-            Button(action: retryAction) {
-                Text("Retry")
-                    .font(.headline)
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 20)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+            
+            // include a button with the retry action only if there is one present
+            if let action = retryAction {
+                Button(action: action) {
+                    // use Retry as the default action title
+                    Text(actionTitle ?? "Retry")
+                        .font(.headline)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 20)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
             }
         }
         .padding()

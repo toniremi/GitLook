@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  SettingsView.swift
 //  GitLook
 //
 //  Created by Antoni Remeseiro Alfonso on 2025/06/14.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TokenInputView: View {
+struct SettingsView: View {
     @EnvironmentObject var appSettings: AppSettings
     @Environment(\.openURL) var openURL
     
@@ -61,9 +61,8 @@ struct TokenInputView: View {
                     }.sheet(isPresented: $isPresentWebView) {
                         NavigationStack {
                             // load our WebView to Github
-                            WebView(url: "https://github.com/")
+                            WebViewContainer(url: "https://github.com/", title: "Github")
                                 .ignoresSafeArea()
-                                .navigationTitle("GitHub")
                                 .navigationBarTitleDisplayMode(.inline)
                         }
                     }
@@ -200,5 +199,5 @@ struct TokenInputView: View {
 }
 
 #Preview {
-    TokenInputView().environmentObject(AppSettings())
+    SettingsView().environmentObject(AppSettings())
 }

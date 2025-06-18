@@ -16,12 +16,11 @@ struct UserRepositoryView: View {
     var body: some View {
         VStack {
             if viewModel.isLoading {
-                ProgressView("Loading '\(username)' User Data...")
-                    .padding().transition(.opacity)
+                LoadingView(loadingText: "Loading '\(username)' User Data...").transition(.opacity)
             } else if let errorMessage = viewModel.errorMessage {
                 Spacer() // Push error to center
                 
-                ErrorView(message: errorMessage) {
+                ErrorView(message: errorMessage, actionTitle: "Retry") {
                     // Retry action: re-fetch user data
                     Task {
                         await viewModel.fetchData(for: username, token: appSettings.githubPersonalAccessToken)

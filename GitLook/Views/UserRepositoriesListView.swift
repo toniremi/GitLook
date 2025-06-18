@@ -24,7 +24,7 @@ struct UserRepositoriesListView: View {
                 // Here, ForEach takes your array directly because GitHubRepository is Identifiable
                 ForEach(repositories) { repo in // This line should now be fine
                     // NavigationLink to WebView
-                    NavigationLink(destination: WebView(url: repo.htmlUrl).navigationTitle(repo.name)) {
+                    NavigationLink(destination: WebViewContainer(url: repo.htmlUrl, title: repo.name)) {
                         LazyVStack(alignment: .leading, spacing: 5) {
                             Text(repo.name)
                                 .font(.headline)
