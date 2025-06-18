@@ -6,7 +6,7 @@
 //
 import Foundation
 
-struct GithubRepository: Decodable, Identifiable, Equatable {
+struct GithubRepository: Codable, Identifiable, Equatable {
     let id: Int
     let name: String
     let language: String? // can be null

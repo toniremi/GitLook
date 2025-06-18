@@ -171,7 +171,7 @@ struct SettingsView: View {
                     .padding(.vertical, 10)
                 }
             }
-            .navigationTitle("App Setup")
+            .navigationTitle("Settings")
             .alert(isPresented: $showingAlert) {
                 Alert(title: Text(alertTitle), message: Text(alertMessage), dismissButton: .default(Text("OK")))
             }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum APIError: Error, LocalizedError {
+enum APIError: Error, LocalizedError, Equatable {
     case invalidURL
     case networkError(Error) // Original network errors from URLSession
     case httpError(Int) // Generic HTTP error with status code
@@ -15,7 +15,7 @@ enum APIError: Error, LocalizedError {
     case apiError(statusCode: Int, message: String) // For other non-2xx errors with an API message
     case decodingError(Error) // For JSON decoding failures
     case unknownError
-
+    
     var errorDescription: String? {
         switch self {
         case .invalidURL:
@@ -53,9 +53,42 @@ enum APIError: Error, LocalizedError {
             return "An unexpected error occurred. Please try again."
         }
     }
+    
+    // Implement Equatable conformance manually
+    static func == (lhs: APIError, rhs: APIError) -> Bool {
+        switch (lhs, rhs) {
+        case (.invalidURL, .invalidURL):
+            return true
+        case (.networkError(let lhsError), .networkError(let rhsError)):
+            // For network errors, compare their localized descriptions or specific error codes
+            // Comparing localizedDescription is often sufficient for testing purposes
+            return lhsError.localizedDescription == rhsError.localizedDescription
+        case (.httpError(let lhsCode), .httpError(let rhsCode)):
+            return lhsCode == rhsCode
+        case (.unauthorized(let lhsMessage), .unauthorized(let rhsMessage)):
+            return lhsMessage == rhsMessage
+        case (.apiError(let lhsStatusCode, let lhsMessage), .apiError(let rhsStatusCode, let rhsMessage)):
+            return lhsStatusCode == rhsStatusCode && lhsMessage == rhsMessage
+        case (.decodingError(let lhsError), .decodingError(let rhsError)):
+            // For decoding errors, also compare localized descriptions
+            return lhsError.localizedDescription == rhsError.localizedDescription
+        case (.unknownError, .unknownError):
+            return true
+        default:
+            return false // If cases don't match, they are not equal
+        }
+    }
 }
 
-class GitHubAPIService {
+class GitHubAPIService: GitHubAPIServiceProtocol {
+    // Add a session property for testability
+    private let session: URLSession
+    
+    // Add an initializer that accepts a URLSession, defaulting to .shared
+    init(session: URLSession = .shared) {
+        self.session = session
+    }
+    
     /// Generic function to make authenticated GitHub API requests
     /// It is using: [https://docs.github.com/en/rest/quickstart?apiVersion=2022-11-28]
     /// - Parameters:
@@ -64,20 +97,28 @@ class GitHubAPIService {
     func performRequest<T: Decodable>(url: URL, personalAccessToken: String) async throws -> T {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-
+        
         // Add Authorization header with Personal Access Token
         if personalAccessToken.isEmpty == false {
             request.setValue("token \(personalAccessToken)", forHTTPHeaderField: "Authorization")
         } else {
             print("Warning: No Personal Access Token found. API requests might be rate-limited.")
         }
-
+        
         // Set User-Agent header (GitHub API requires it)
         request.setValue("GitHubClientAppSwiftUI", forHTTPHeaderField: "User-Agent")
+        
+        //  Use self.session for the request
+        let data: Data
+        let response: URLResponse
 
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
+        do {
+            (data, response) = try await session.data(for: request)
+        } catch {
+            // FIX: Catch network errors here and throw APIError.networkError
+            throw APIError.networkError(error)
+        }
+        
         guard let httpResponse = response as? HTTPURLResponse else {
             throw APIError.networkError(NSError(domain: "Invalid Response", code: 0, userInfo: nil))
         }
@@ -90,8 +131,8 @@ class GitHubAPIService {
         } else {
             print("--- Could not convert data to string for debugging ---")
         }
-
-
+        
+        
         // properly check status code to return a more complete error
         // the aim is to using our new ErrorView to display a more user friendly error in the UI
         guard (200...299).contains(httpResponse.statusCode) else {
@@ -113,7 +154,7 @@ class GitHubAPIService {
                 // Fallback to generic HTTP error, but give specific 401 if it's 401
                 if httpResponse.statusCode == 401 {
                     // throw unauthorized error without specific message
-                    throw APIError.unauthorized(message: nil)
+                    throw APIError.unauthorized(message: "Bad credentials") // include a message instead of nil
                 } else {
                     // throw generic http error using the status code
                     throw APIError.httpError(httpResponse.statusCode)
@@ -124,14 +165,14 @@ class GitHubAPIService {
                 
                 if httpResponse.statusCode == 401 {
                     // throw unauthorized error without specific message
-                    throw APIError.unauthorized(message: nil)
+                    throw APIError.unauthorized(message: "Bad credentials") // include a message instead of nil
                 } else {
                     // throw generic http error using the status code
                     throw APIError.httpError(httpResponse.statusCode)
                 }
             }
         }
-
+        
         do {
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase // GitHub API uses snake_case
@@ -163,7 +204,7 @@ class GitHubAPIService {
             throw APIError.decodingError(error)
         }
     }
-
+    
     /// Fetch GitHub Users
     /// - Parameters:
     ///     - token: The personal access token neded for the request
@@ -177,10 +218,10 @@ class GitHubAPIService {
         guard let url = URL(string: urlString) else {
             throw APIError.invalidURL
         }
-
+        
         return try await performRequest(url: url, personalAccessToken: token)
     }
-
+    
     /// Fetch Repositories for a specific user
     /// - Parameters:
     ///     - username: The user we want to fetch repositories for
@@ -191,7 +232,7 @@ class GitHubAPIService {
         }
         return try await performRequest(url: url, personalAccessToken: token)
     }
-
+    
     /// Fetch User details for a user
     /// - Parameters:
     ///     - username: The user we want to fetch details for

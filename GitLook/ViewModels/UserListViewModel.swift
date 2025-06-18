@@ -28,10 +28,10 @@ class UserListViewModel: ObservableObject {
     @Published var selectedSortOption: UserSortOption = .usernameAsc // Default sort option
     
 // Dependency Injection
-    private let apiService: GitHubAPIService
+    private let apiService: any GitHubAPIServiceProtocol
 
     // Initialize with the API service
-    init(apiService: GitHubAPIService = GitHubAPIService()) {
+    init(apiService: any GitHubAPIServiceProtocol = GitHubAPIService()) {
         // assign our api Service
         self.apiService = apiService
     }
@@ -76,6 +76,9 @@ class UserListViewModel: ObservableObject {
         } catch {
             errorMessage = (error as? APIError)?.localizedDescription ?? "An unknown error occurred."
             print("Error fetching users: \(error.localizedDescription)")
+            // FIX: Set canLoadMoreUsers to false on failure
+            // Caught during UnitTesting
+            canLoadMoreUsers = false // No more users can be loaded if an error occurs
         }
         isLoading = false
     }
