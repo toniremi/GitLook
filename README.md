@@ -142,7 +142,7 @@ We acknowledge these areas for future enhancement if time allows:
 * **User Search Functionality**: Add a search bar to allow users to search for specific GitHub users or repositories.
 * **Favorite Users/Repositories**: Allow users to mark certain users or repositories as favorites for quick access.
 * **Repository Sorting/Filtering**: Add options to sort repositories by stars, language, last updated, etc.
-* **Theming/Dark Mode**: Provide support for light and dark modes.
+* **~Theming/Dark Mode~**: ~Provide support for light and dark modes.~
 
 ## Introduced Dependencies during improvements
 * [keychain-swift](https://github.com/evgenyneu/keychain-swift) => Helper functions for saving text in Keychain securely for iOS, OS X, tvOS and watchOS. 
