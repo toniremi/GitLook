@@ -44,11 +44,10 @@ struct WebViewContainer: View {
     }
 }
 
-// Optional: Preview Provider for RepositoryWebViewContainer
-struct RepositoryWebViewContainer_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView { // Wrap in NavigationView for title preview
-            WebViewContainer(url:  "https://github.com/toniremi?tab=repositories", title: "toniremi")
-        }
+#Preview {
+    // Wrap in NavigationView for title preview
+    NavigationView {
+        WebViewContainer(url:  "https://github.com/toniremi?tab=repositories", title: "toniremi")
     }
 }
+

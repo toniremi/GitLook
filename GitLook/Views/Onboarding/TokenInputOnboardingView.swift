@@ -66,3 +66,7 @@ struct TokenInputOnboardingView: View {
     }
 }
 
+#Preview {
+    @Previewable @State var previewToken: String = "YOUR_TOKEN_HERE"
+    TokenInputOnboardingView(token: $previewToken)
+}

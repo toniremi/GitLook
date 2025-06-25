@@ -36,12 +36,9 @@ struct EmptyStateView: View {
     }
 }
 
-struct EmptyStateView_Previews: PreviewProvider {
-    static var previews: some View {
-        EmptyStateView(
-            systemImageName: "person.2.fill",
-            title: "No Users Found",
-            message: "It seems there are no GitHub users to display right now. Try refreshing the list.")
-            .previewLayout(.sizeThatFits)
-    }
+#Preview {
+    EmptyStateView(
+        systemImageName: "person.2.fill",
+        title: "No Users Found",
+        message: "It seems there are no GitHub users to display right now. Try refreshing the list.")
 }

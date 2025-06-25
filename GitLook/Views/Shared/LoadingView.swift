@@ -42,9 +42,6 @@ struct LoadingView: View {
     }
 }
 
-struct LoadingView_Previews: PreviewProvider {
-    static var previews: some View {
-        LoadingView(loadingText: "Loading ...")
-            .previewLayout(.sizeThatFits)
-    }
+#Preview {
+    LoadingView(loadingText: "Loading ...")
 }

@@ -87,20 +87,15 @@ struct UserDetailsView: View {
     }
 }
 
-struct UserDetailsView_Previews: PreviewProvider {
-    static var previews: some View {
-        // for preview simply input some dummy data
-        UserDetailsView(user: GithubUserDetail(
-            id: 1,
-            login: "octocat",
-            avatarUrl: "https://avatars.githubusercontent.com/u/583231?v=4",
-            name: "The Octocat",
-            location: "San Francisco, USA",
-            email: "octocat@github.com",
-            followers: 56,
-            following: 2345
-        ))
-        .previewLayout(.sizeThatFits) // Adjust preview size to fit content
-        .padding()
-    }
+#Preview {
+    UserDetailsView(user: GithubUserDetail(
+        id: 1,
+        login: "octocat",
+        avatarUrl: "https://avatars.githubusercontent.com/u/583231?v=4",
+        name: "The Octocat",
+        location: "San Francisco, USA",
+        email: "octocat@github.com",
+        followers: 56,
+        following: 2345
+    ))
 }

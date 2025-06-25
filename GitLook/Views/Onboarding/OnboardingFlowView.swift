@@ -115,10 +115,7 @@ struct OnboardingFlowView: View {
     }
 }
 
-// Preview Provider
-struct OnboardingFlowView_Previews: PreviewProvider {
-    static var previews: some View {
-        OnboardingFlowView()
-            .environmentObject(AppSettings())
-    }
+// Preview Macro
+#Preview {
+    OnboardingFlowView().environmentObject(AppSettings())
 }

@@ -72,38 +72,36 @@ struct UserRepositoriesListView: View {
     }
 }
 
-struct UserRepositoriesListView_Previews: PreviewProvider {
-    static var previews: some View {
-        // No repositories preview
-        UserRepositoriesListView(repositories: [])
-            .previewLayout(.sizeThatFits)
-        // List with Repositories
-        UserRepositoriesListView(repositories: [
-            GithubRepository(
-                id: 1,
-                name: "my-awesome-repo",
-                language: "Swift",
-                stargazersCount: 150,
-                description: "A cool project built in Swift.",
-                htmlUrl: "https://github.com/octocat/my-awesome-repo",
-                
-                fork: false),
-            GithubRepository(
-                id: 2,
-                name: "another-project",
-                language: "Python",
-                stargazersCount: 30,
-                description: "Data science exploration.",
-                htmlUrl: "https://github.com/octocat/another-project",
-                fork: false),
-            GithubRepository(
-                id: 3,
-                name: "old-fork",
-                language: "JavaScript",
-                stargazersCount: 5,
-                description: "An old project I forked (this one should be filtered out by the ViewModel).",
-                htmlUrl: "https://github.com/octocat/old-fork",
-                fork: true)
-        ])
-    }
+#Preview("Empty") {
+    UserRepositoriesListView(repositories: [])
+}
+
+#Preview("Repositories List") {
+    UserRepositoriesListView(repositories: [
+        GithubRepository(
+            id: 1,
+            name: "my-awesome-repo",
+            language: "Swift",
+            stargazersCount: 150,
+            description: "A cool project built in Swift.",
+            htmlUrl: "https://github.com/octocat/my-awesome-repo",
+            
+            fork: false),
+        GithubRepository(
+            id: 2,
+            name: "another-project",
+            language: "Python",
+            stargazersCount: 30,
+            description: "Data science exploration.",
+            htmlUrl: "https://github.com/octocat/another-project",
+            fork: false),
+        GithubRepository(
+            id: 3,
+            name: "old-fork",
+            language: "JavaScript",
+            stargazersCount: 5,
+            description: "An old project I forked (this one should be filtered out by the ViewModel).",
+            htmlUrl: "https://github.com/octocat/old-fork",
+            fork: true)
+    ])
 }

@@ -60,9 +60,6 @@ struct ErrorView: View {
     }
 }
 
-struct ErrorView_Previews: PreviewProvider {
-    static var previews: some View {
-        ErrorView(message: "Failed to load data due to a network connection issue. Please check your internet connection and try again.", retryAction: {})
-            .previewLayout(.sizeThatFits)
-    }
+#Preview {
+    ErrorView(message: "Failed to load data due to a network connection issue. Please check your internet connection and try again.", retryAction: {})
 }

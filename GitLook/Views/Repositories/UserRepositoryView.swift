@@ -67,11 +67,11 @@ struct UserRepositoryView: View {
     }
 }
 
-struct UserRepositoryView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView { // Embed in NavigationView for previewing navigation
-            UserRepositoryView(username: "octocat")
-                .environmentObject(AppSettings()) // Provide AppSettings for the preview
-        }
+
+#Preview {
+    // Embed in NavigationView for previewing navigation
+    NavigationView {
+        UserRepositoryView(username: "octocat")
+            .environmentObject(AppSettings()) // Provide AppSettings for the preview
     }
 }
